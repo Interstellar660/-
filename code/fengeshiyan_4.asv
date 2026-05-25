@@ -1,0 +1,134 @@
+%% 设计实验4: 区域生长法图像分割
+clear; 
+    clc; 
+        close all;
+
+%% ===== 区域生长函数定义（使用BFS广度优先搜索）=====
+% 函数写在文件末尾或单独保存为 regionGrowing.m
+
+%% 第一步：读取图像
+    f = imread('D:\Matlab\toolbox\images\imdata\cameraman.tif');
+        if size(f, 3) == 3
+            f = rgb2gray(f);
+        end
+    f = double(f);
+        [rows, cols] = size(f);
+
+%% 第二步：设置种子点和阈值
+% 种子点坐标（行, 列）— 可根据图像内容调整
+    seed_row = 120;   % 种子点行坐标
+        seed_col = 80;    % 种子点列坐标
+            T_grow = 15;      % 灰度相似性阈值（值越大区域越大）
+    fprintf('种子点: (%d, %d), 灰度值: %.1f\n', seed_row, seed_col, f(seed_row, seed_col));
+        fprintf('生长阈值 T = %d\n', T_grow);
+
+%% 第三步：调用区域生长算法
+    region = regionGrowing(f, seed_row, seed_col, T_grow);
+
+%% 第四步：显示结果
+    figure('Name','设计实验4 - 区域生长分割');
+        subplot(1, 3, 1);
+            imshow(uint8(f)); title('原始图像');
+                hold on;
+    plot(seed_col, seed_row, 'r+', 'MarkerSize', 15, 'LineWidth', 2);
+        legend('种子点'); 
+            hold off;
+    subplot(1, 3, 2);
+        imshow(region); 
+            title(['生长区域 (T=', num2str(T_grow), ')']);
+
+% 在原图上叠加分割结果
+    overlay = uint8(f);
+        overlay(region) = 255;  % 生长区域置为白色
+            subplot(1, 3, 3);
+                imshow(overlay); 
+                    title('分割叠加显示');
+    fprintf('生长区域像素数: %d (占 %.1f%%)\n', ...
+        sum(region(:)), sum(region(:))/(rows*cols)*100);
+
+%% 第五步：不同阈值对比
+    figure('Name','不同阈值下的区域生长结果');
+        thresh_list = [5, 10, 20, 40];
+            for i = 1:4
+                r = regionGrowing(f, seed_row, seed_col, thresh_list(i));
+                    subplot(2, 2, i);
+                        imshow(r);
+                            title(['T = ', num2str(thresh_list(i))]);
+            end
+    sgtitle('不同阈值下的区域生长结果');
+
+%% 第六步：多种子点区域生长（分割多个区域）
+    seeds = [120 80; 50 200; 180 150];  % 每行为一个种子点 [行 列]
+        label_map = zeros(rows, cols);
+figure('Name','多种子点分割');
+imshow(uint8(f)); title('多种子点区域生长'); hold on;
+
+for k = 1:size(seeds, 1)
+    r_k = regionGrowing(f, seeds(k,1), seeds(k,2), T_grow);
+    % 避免区域重叠（已标记的不再生长）
+    r_k(label_map > 0) = false;
+    label_map(r_k) = k;
+    plot(seeds(k,2), seeds(k,1), 'r+', 'MarkerSize', 12, 'LineWidth', 2);
+end
+hold off;
+
+figure('Name','多区域标签图');
+imagesc(label_map); colormap(jet); colorbar;
+title('多种子点区域标签图');
+
+disp('实验4完成。');
+
+%% ================================================================
+%% 区域生长函数（BFS 广度优先搜索实现）
+%% ================================================================
+function region = regionGrowing(img, seed_r, seed_c, threshold)
+%  regionGrowing - 基于BFS的区域生长算法
+%  输入：
+%    img       - 输入灰度图像（double类型）
+%    seed_r    - 种子点行坐标
+%    seed_c    - 种子点列坐标
+%    threshold - 灰度相似性阈值
+%  输出：
+%    region    - 逻辑矩阵，true表示属于生长区域
+
+    [rows, cols] = size(img);
+    region   = false(rows, cols);  % 输出区域掩膜
+    visited  = false(rows, cols);  % 是否已访问
+
+    seed_val = img(seed_r, seed_c);  % 种子点灰度值
+
+    % BFS 队列，使用矩阵存储 [行 列]
+    queue = [seed_r, seed_c];
+    visited(seed_r, seed_c) = true;
+    region(seed_r, seed_c)  = true;
+
+    % 4-邻域偏移
+    delta = [-1 0; 1 0; 0 -1; 0 1];
+
+    head = 1;  % 队列头指针
+    while head <= size(queue, 1)
+        cur = queue(head, :);
+        head = head + 1;
+
+        for d = 1:4
+            nr = cur(1) + delta(d, 1);
+            nc = cur(2) + delta(d, 2);
+
+            % 边界检查
+            if nr < 1 || nr > rows || nc < 1 || nc > cols
+                continue;
+            end
+            if visited(nr, nc)
+                continue;
+            end
+
+            visited(nr, nc) = true;
+
+            % 相似性判断：与种子点灰度之差小于阈值
+            if abs(img(nr, nc) - seed_val) <= threshold
+                region(nr, nc) = true;
+                queue = [queue; nr, nc];  % 入队
+            end
+        end
+    end
+end

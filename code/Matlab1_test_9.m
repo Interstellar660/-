@@ -1,14 +1,22 @@
-X=imread('C:\Program Files\MATLAB\R2021b\toolbox\images\imdata\trees.tif');
-X1=im2double(X);
-figure(),imhist(X1);
-saveas(gcf,'figure_output18.jpg');
+clc
+clear
+close all;
+X=imread('D:\Matlab\toolbox\images\imdata\bag.png');
+    X1=im2double(X);
+        figure(),
+            imhist(X1);
+                %saveas(gcf,'figure_output18.jpg');
 X2=imadjust(X1,[0,0.3],[0,1],1);
-figure,imhist(X2);
- saveas(gcf,'figure_output19.jpg');
-figure,imshow(X2);
- saveas(gcf,'figure_output20.jpg');
+    subplot(2,2,1),
+        imhist(X2);
+            %saveas(gcf,'figure_output19.jpg');
+    subplot(2,2,2),
+        imshow(X2);
+            %saveas(gcf,'figure_output20.jpg');
 X3=imadjust(X1,[0,0.3],[0,1],2);
-figure,imhist(X3);
- saveas(gcf,'figure_output21.jpg');
-figure,imshow(X3);
- saveas(gcf,'figure_output22.jpg');
+    subplot(2,2,3),
+        imhist(X3);
+            %saveas(gcf,'figure_output21.jpg');
+    subplot(2,2,4),
+        imshow(X3);
+            %saveas(gcf,'figure_output22.jpg');

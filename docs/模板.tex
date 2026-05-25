@@ -1,0 +1,64 @@
+\documentclass[a4paper,12pt]{ctexart} % 使用ctexart支持中文
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+% 设置表格行高
+\setlength{\extrarowheight}{2pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+	
+	% ================== 第一页：实验基本信息 ==================
+	\begin{center}
+		{\Huge 武汉工程大学邮电与信息工程学院}\\[0.5cm]
+		{\large 上机实验报告}\\[1cm]
+	\end{center}
+	
+	% 实验信息表格
+	\noindent
+	\begin{tabular}{|p{3.5cm}|p{8cm}|p{2.5cm}|p{2.5cm}|}
+		\hline
+		专业班级： & \hfill  & 学号： & \hfill \\
+		\hline
+		学生姓名： & \hfill  & 实验室： & \hfill \\
+		\hline
+		指导教师： & \hfill  & 成绩： & \hfill \\
+		\hline
+		\multicolumn{4}{|l|}{日期：\hspace{1cm}年\hspace{0.8cm}月\hspace{0.8cm}日\hspace{1cm}第\hspace{0.5cm}周\hspace{0.5cm}星期\hspace{0.5cm}节次} \\
+		\hline
+		\multicolumn{4}{|l|}{实验名称：\hfill} \\
+		\hline
+		\multicolumn{4}{|l|}{实验类别：操作性 $\square$ \quad 验证性 $\square$ \quad 设计性 $\square$ \quad 综合性 $\square$ \quad 其它 $\square$} \\
+		\hline
+		\multicolumn{4}{|l|}{目的与要求：} \\
+		\multicolumn{4}{|c|}{\rule{0pt}{2.5cm}} \\ % 留出空白高度
+		\hline
+		\multicolumn{4}{|l|}{实验内容要点：} \\
+		\multicolumn{4}{|c|}{\rule{0pt}{4cm}} \\ % 留出空白高度
+		\hline
+		\multicolumn{2}{|p{8cm}|}{教师评语：\rule{0pt}{3.5cm}} & 
+		\multicolumn{2}{p{5cm}|}{\makecell[l]{教师签名：\\[1cm] 年\hspace{1cm}月\hspace{1cm}日}} \\
+		\hline
+	\end{tabular}
+	
+	% ================== 第二页：实验步骤 ==================
+	\newpage
+	\section*{实验步骤}
+	\vspace{15cm} % 留出填写实验步骤的空白
+	
+	% ================== 第三页：实验分析与体会 ==================
+	\newpage
+	\section*{实验分析体会}
+	\vspace{12cm} % 留出填写分析体会的空白
+	
+	\begin{flushright}
+		学生签名：\hspace{2cm}\\[1cm]
+		年\hspace{1cm}月\hspace{1cm}日
+	\end{flushright}
+	
+\end{document}

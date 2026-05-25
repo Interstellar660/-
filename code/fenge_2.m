@@ -1,0 +1,21 @@
+clc;
+    clear;
+        close all;
+imggray = imread('D:\Matlab\toolbox\images\imdata\cameraman.tif');
+    subplot(221); 
+        imshow(imggray); 
+            title('原始图像');
+imgbw = imbinarize(imggray,0.5);
+    subplot(222); 
+        imshow(imgbw); 
+            title( '使用默认阈值0.5');
+imgbw = imbinarize(imggray, 0.25);
+    subplot(223); 
+        imshow(imgbw); 
+            title( '指定阈值为0.25');
+level = graythresh(imggray);
+    imgbw = imbinarize(imggray,level);
+        subplot(224); 
+            imshow(imgbw); 
+                title('使用最大类间方差法（Otsu）获得阈值');
+                    %saveas(gcf,'fenge_2.png')

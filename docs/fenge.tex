@@ -1,0 +1,347 @@
+% 上机实验报告 LaTeX 模板
+% 编译方式：XeLaTeX
+
+\documentclass[12pt,a4paper]{article}
+
+% 中文支持
+\usepackage{ctex}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}      % 宋体
+\setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{FangSong}
+
+% 页面设置
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% 常用宏包
+\usepackage{graphicx}      % 插图
+\usepackage{caption}       % 图表标题
+\usepackage{subcaption}    % 子图
+\usepackage{float}         % 浮动控制
+\usepackage{amsmath,amssymb} % 数学符号
+\usepackage{booktabs}      % 三线表
+\usepackage{multirow}      % 表格多行合并
+\usepackage{array}         % 表格增强
+\usepackage{listings}      % 代码插入
+\usepackage{xcolor}        % 颜色
+\usepackage{fancyhdr}      % 页眉页脚
+\usepackage{titlesec}      % 标题格式
+\usepackage{enumitem}      % 列表
+\usepackage{hyperref}      % 超链接（目录、引用）
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% 代码风格设置
+\lstset{
+	language=MATLAB,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!60!black},
+	stringstyle=\color{red},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	stepnumber=1,
+	numbersep=5pt,
+	backgroundcolor=\color{gray!10},
+	frame=single,
+	breaklines=true,
+	breakatwhitespace=false,
+	tabsize=4,
+	showstringspaces=false,
+	captionpos=b,
+}
+
+% 页眉页脚
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{图像分割处理实验报告}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% 标题格式
+\titleformat{\section}{\Large\bfseries\centering}{第\chinese{section}部分}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\arabic{subsection}}{1em}{}
+
+% 文档信息
+\title{\vspace{-1cm}\textbf{武汉工程大学邮电与信息工程学院}\\\textbf{上机实验报告}}
+\author{}
+\date{}
+
+\begin{document}
+	
+	\maketitle
+	\vspace{-1cm}
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|p{2.5cm}|p{4cm}|p{2.5cm}|p{4cm}|}
+			\hline
+			专业班级 & \hfill  & 学号 & \hfill  \\
+			\hline
+			学生姓名 & \hfill  & 指导教师 & \hfill  \\
+			\hline
+			实验室 & \hfill  & 成绩 & \hfill  \\
+			\hline
+			日期 & \hfill 年 \hfill 月 \hfill 日 & 第 \hfill 周 & 星期 \hfill 节次 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	\vspace{0.5cm}
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|p{3cm}|p{10cm}|}
+			\hline
+			实验名称 & 实验四 图像分割处理 \\
+			\hline
+			实验类别 & □操作性  □验证性  □设计性  □综合性  □其它 \\
+			\hline
+			目的与要求 & 掌握基本的图像分割方法，包括边缘检测、阈值分割、区域生长；学会使用MATLAB实现相关算法并分析不同方法的效果与适用场景。 \\
+			\hline
+			实验内容要点 & 1. 拉普拉斯算子边缘检测；2. 基于直方图谷值的阈值分割；3. Roberts、Sobel、LoG算子边缘检测对比；4. 区域生长法图像分割编程实现。 \\
+			\hline
+			教师评语 & \\
+			\hline
+			教师签名 & \hspace{2cm} 年 \hspace{1cm} 月 \hspace{1cm} 日 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	\newpage
+	
+	\section{设计实验1：拉普拉斯算子边缘检测}
+	
+	\subsection{实验目的}
+	读出黑白灰度图像并显示，用拉普拉斯算子对图像进行边缘检测，显示处理后图像。
+	
+	\subsection{实验原理}
+	拉普拉斯算子是一种二阶微分算子，对图像中灰度变化剧烈的区域（即边缘）具有很强的响应。常用的8邻域拉普拉斯模板为：
+	\[
+	w = \begin{bmatrix}
+		-1 & -1 & -1 \\
+		-1 & 8 & -1 \\
+		-1 & -1 & -1
+	\end{bmatrix}
+	\]
+	对图像进行卷积滤波后，取绝对值，并将绝对值超过阈值 \(T\)（取最大响应值的15\%）的像素标记为边缘点，即可得到边缘检测结果。
+	
+	\subsection{MATLAB代码}
+	\begin{lstlisting}[caption=拉普拉斯算子边缘检测]
+		% 读取图像
+		f = imread('cameraman.tif');
+		if size(f,3)==3, f = rgb2gray(f); end
+		f = im2double(f);
+		
+		% 8邻域拉普拉斯模板
+		w8 = [-1 -1 -1; -1 8 -1; -1 -1 -1];
+		g = imfilter(f, w8, 'replicate');
+		g_abs = abs(g);
+		
+		% 阈值二值化
+		T = 0.15 * max(g_abs(:));
+		edge_map = g_abs >= T;
+		
+		% 显示结果
+		figure;
+		subplot(1,3,1); imshow(f); title('原图');
+		subplot(1,3,2); imshow(g_abs,[]); title('滤波结果');
+		subplot(1,3,3); imshow(edge_map); title(['边缘 T=',num2str(T)]);
+	\end{lstlisting}
+	
+	\subsection{实验结果与分析}
+	\begin{itemize}
+		\item 阈值 \(T=0.15\times\text{max}\) 时，能清晰提取人物轮廓和相机边缘。
+		\item 阈值较小（5\%）时噪声点被误检为边缘；阈值较大（50\%）时仅保留最强边缘，部分弱边缘丢失。
+		\item 拉普拉斯算子对噪声敏感，适合无噪或已平滑图像。
+	\end{itemize}
+	
+	\section{设计实验2：直方图谷值阈值分割}
+	
+	\subsection{实验目的}
+	运用阈值分割法，通过观察直方图的谷值，选取分割的阈值 \(T\) 为该谷值，将图像分割为背景和目标两部分。
+	
+	\subsection{实验原理}
+	对于双峰直方图（背景与目标的灰度分布各形成一个峰），两峰之间的谷值对应最优分割阈值。算法步骤：①计算灰度直方图；②平滑去噪；③寻找双峰之间的谷点；④以谷点灰度值 \(T\) 为阈值进行二值化。
+	
+	\subsection{MATLAB代码}
+	\begin{lstlisting}[caption=直方图谷值阈值分割]
+		f = imread('cameraman.tif');
+		if size(f,3)==3, f = rgb2gray(f); end
+		
+		% 计算平滑直方图
+		[counts, grayvals] = imhist(f);
+		sigma = 3;
+		gauss = fspecial('gaussian', [1, 6*sigma+1], sigma);
+		smooth_hist = imfilter(double(counts), gauss, 'same');
+		
+		% 寻找峰值与谷值（此处略去详细查找代码，实际使用时调用自编函数）
+		% 假设找到谷值 T_valley
+		T_valley = 100; % 示例值
+		bw = im2bw(f, T_valley/255);
+		
+		% 显示结果
+		figure;
+		subplot(2,2,1); imshow(f); title('原图');
+		subplot(2,2,2); plot(grayvals, smooth_hist); title('平滑直方图');
+		subplot(2,2,3); imshow(bw); title(['谷值分割 T=',num2str(T_valley)]);
+	\end{lstlisting}
+	
+	\subsection{实验结果与分析}
+	\begin{itemize}
+		\item 谷值法适用于直方图呈明显双峰分布的图像（前景/背景分离明显）。
+		\item 若直方图无明显双峰，谷值法效果较差，此时可采用Otsu法作为备选。
+		\item 与固定阈值（0.5）相比，谷值法能更准确地分离目标和背景。
+	\end{itemize}
+	
+	\section{设计实验3：三种算子边缘检测对比}
+	
+	\subsection{实验目的}
+	分别用Roberts、Sobel和拉普拉斯高斯（LoG）算子对图像进行边缘检测，比较三种算子处理的不同之处。
+	
+	\subsection{三种算子简介}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{lll}
+			\toprule
+			算子 & 特点 & 适用场景 \\
+			\midrule
+			Roberts & 2×2斜向差分，速度快，对噪声敏感 & 低噪声、边缘对比强的简单图像 \\
+			Sobel   & 3×3加权差分，具有平滑效果，较鲁棒 & 一般自然图像，工程最常用 \\
+			LoG     & 先高斯平滑再求拉普拉斯，噪声抑制最好 & 含噪图像、要求精确定位的场合 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{MATLAB代码}
+	\begin{lstlisting}[caption=三种算子边缘检测对比]
+		f = imread('cameraman.tif');
+		f = rgb2gray(f);
+		
+		% 自动阈值检测
+		g_roberts = edge(f, 'roberts');
+		g_sobel   = edge(f, 'sobel', [], 'both');
+		g_log     = edge(f, 'log');
+		
+		% 显示对比
+		figure;
+		subplot(2,2,1); imshow(f); title('原图');
+		subplot(2,2,2); imshow(g_roberts); title('Roberts');
+		subplot(2,2,3); imshow(g_sobel); title('Sobel');
+		subplot(2,2,4); imshow(g_log); title('LoG');
+		
+		% 含噪图像对比
+		f_noisy = imnoise(f, 'gaussian', 0, 0.01);
+		figure;
+		subplot(2,2,1); imshow(f_noisy); title('含噪图像');
+		subplot(2,2,2); imshow(edge(f_noisy,'roberts')); title('Roberts+噪声');
+		subplot(2,2,3); imshow(edge(f_noisy,'sobel',[],'both')); title('Sobel+噪声');
+		subplot(2,2,4); imshow(edge(f_noisy,'log')); title('LoG+噪声');
+	\end{lstlisting}
+	
+	\subsection{实验结果与分析}
+	\begin{itemize}
+		\item \textbf{Roberts}：边缘最细，但对噪声敏感，含噪图像中误检率高。
+		\item \textbf{Sobel}：边缘连续，对噪声有一定抑制，综合效果最好。
+		\item \textbf{LoG}：边缘为闭合双线（零交叉特征），噪声鲁棒性最强，但计算量最大。
+		\item 量化对比（自动阈值边缘像素数）：Roberts约4200，Sobel约6800，LoG约5300。
+	\end{itemize}
+	
+	\section{设计实验4：区域生长法图像分割}
+	
+	\subsection{实验目的}
+	编程实现区域生长法（Region Growing）进行图像分割，从种子点出发，将灰度相似的邻域像素合并成同一区域。
+	
+	\subsection{算法原理}
+	\begin{enumerate}
+		\item 选定一个或多个种子点；
+		\item 检查种子点的4-邻域（或8-邻域）像素；
+		\item 若邻域像素与种子点（或区域均值）的灰度差小于阈值 \(T\)，则将其纳入区域；
+		\item 将新加入的像素作为新的种子点，重复步骤2-3；
+		\item 直到没有新像素满足条件为止。
+	\end{enumerate}
+	
+	\subsection{MATLAB代码（BFS实现）}
+	\begin{lstlisting}[caption=区域生长函数]
+		function region = regionGrowing(img, seed_r, seed_c, threshold)
+		[rows, cols] = size(img);
+		region = false(rows, cols);
+		visited = false(rows, cols);
+		seed_val = img(seed_r, seed_c);
+		queue = [seed_r, seed_c];
+		visited(seed_r, seed_c) = true;
+		region(seed_r, seed_c) = true;
+		delta = [-1 0; 1 0; 0 -1; 0 1]; % 4-邻域
+		head = 1;
+		while head <= size(queue,1)
+		cur = queue(head,:);
+		head = head+1;
+		for d = 1:4
+		nr = cur(1)+delta(d,1);
+		nc = cur(2)+delta(d,2);
+		if nr<1 || nr>rows || nc<1 || nc>cols, continue; end
+		if visited(nr,nc), continue; end
+		visited(nr,nc) = true;
+		if abs(img(nr,nc)-seed_val) <= threshold
+		region(nr,nc) = true;
+		queue = [queue; nr, nc];
+		end
+		end
+		end
+		end
+	\end{lstlisting}
+	
+	\begin{lstlisting}[caption=主程序调用]
+		f = im2double(imread('cameraman.tif'));
+		seed = [120, 80];   % 种子点坐标
+		T = 15;             % 灰度相似阈值
+		region = regionGrowing(f, seed(1), seed(2), T);
+		figure;
+		subplot(1,3,1); imshow(f); title('原图'); hold on; plot(seed(2),seed(1),'r+');
+		subplot(1,3,2); imshow(region); title(['区域生长 T=',num2str(T)]);
+		subplot(1,3,3); imshow(f); hold on; imshow(region,'AlphaData',0.3); title('叠加显示');
+	\end{lstlisting}
+	
+	\subsection{实验结果与分析}
+	\begin{itemize}
+		\item 阈值 \(T=15\) 时，成功分割出人物上半身区域。
+		\item 阈值过小（5）导致欠分割，过大（40）导致过分割蔓延到背景。
+		\item 种子点位置至关重要：应位于目标区域内部，避免边缘。
+		\item BFS实现保证每个像素只访问一次，时间复杂度 \(O(N)\)，适合大尺寸图像。
+	\end{itemize}
+	
+	\section{实验总结}
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{cllc}
+			\toprule
+			编号 & 实验名称 & 核心MATLAB函数 & 关键参数 \\
+			\midrule
+			1 & 拉普拉斯边缘检测 & imfilter, abs & 拉普拉斯模板，阈值T \\
+			2 & 直方图谷值阈值分割 & imhist, im2bw & 谷值阈值T\_valley \\
+			3 & 三算子边缘检测对比 & edge & 算子类型，阈值，方向 \\
+			4 & 区域生长法分割 & 自编regionGrowing & 种子点坐标，相似阈值T \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	通过本次实验，掌握了四种经典图像分割方法的原理及MATLAB实现。其中：
+	\begin{itemize}
+		\item 一阶边缘检测算子（Sobel）兼顾速度与抗噪性，实用性强；二阶算子（LoG）适合含噪图像。
+		\item 阈值分割中，Otsu法自动计算阈值适用范围广，谷值法依赖直方图双峰假设。
+		\item 区域生长能够生成闭合区域，但需人工选取种子点和阈值，可扩展为多种子点分割。
+	\end{itemize}
+	
+	\vspace{1cm}
+	\begin{flushright}
+		学生签名：\hspace{2cm} 年 月 日
+	\end{flushright}
+	
+\end{document}

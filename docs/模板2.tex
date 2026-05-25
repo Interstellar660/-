@@ -1,0 +1,117 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ctex} % 支持中文排版
+\usepackage{geometry}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amssymb} % 提供方框符号 \square
+\usepackage{makecell} % 优化表格内换行
+\usepackage{enumitem}
+\usepackage{wasysym} % 提供了 \checked 符号
+\usepackage{graphicx} % 插入图片必须的宏包
+% 设置页面边距
+\geometry{left=20mm, right=20mm, top=25mm, bottom=25mm}
+
+% 取消全局首行缩进，方便表单对齐
+\parindent=0pt
+
+\begin{document}
+	
+	% ==================== 第 1 页：封面与基本信息 ====================
+	\begin{center}
+		{\fontsize{22pt}{26pt}\selectfont\bfseries 武汉工程大学邮电与信息工程学院 \par}
+		\vspace{0.8cm}
+		{\fontsize{18pt}{22pt}\selectfont\makebox[5cm]{\hrulefill}上机实验报告 \par}
+	\end{center}
+	
+	\vspace{0.8cm}
+	
+	% 学生基本信息栏
+	\begin{center}
+		\renewcommand{\arraystretch}{1.8}
+		\fontsize{11pt}{13pt}\selectfont
+		\begin{tabular}{ll@{\hspace{1.5cm}}ll}
+			专业班级：& \makebox[5cm]{\hrulefill} & 
+			学\qquad 号：& \makebox[5cm]{\hrulefill} \\
+			学生姓名：& \makebox[5cm]{\hrulefill} & 
+			实~验~室：& \makebox[5cm]{\hrulefill} \\
+			指导教师：& \makebox[5cm]{\hrulefill} & 
+			成\qquad 绩：& \makebox[5cm]{\hrulefill} \\
+		\end{tabular}
+	\end{center}
+	
+	\vspace{0.6cm}
+	
+	% 日期栏
+	\begin{center}
+		\fontsize{11pt}{13pt}\selectfont
+		日期：\makebox[1.2cm]{\hrulefill}年\makebox[0.8cm]{\hrulefill}月\makebox[0.8cm]{\hrulefill}日 
+		\hspace{0.5cm} 第\makebox[0.8cm]{\hrulefill}周 
+		\hspace{0.5cm} 星期\makebox[0.8cm]{\hrulefill}节次
+	\end{center}
+	
+	\vspace{0.4cm}
+	
+	% 主信息表格
+	\renewcommand{\arraystretch}{2.0} % 增加表格行高以契合原图
+	\begin{tabularx}{\textwidth}{|m{2cm}|X|}
+		\hline
+		实验名称 & \\
+		\hline
+		实验类别 & 操作性$\square$ \quad 验证性$\square$ \quad 设计性$\square$ \quad 综合性$\square$ \quad 其它$\square$ \\
+		\hline
+		目的与要求 & 
+		\begin{enumerate}[label=\arabic*.] % 自动生成 1. 2. 3. 列表
+			\item 了解图像降质退化的原因，并建立降质模型。
+			\item 理解反向（逆）滤波图像复原的原理。
+			\item 理解维纳滤波图像复原的原理。
+		\end{enumerate} \\
+		\hline
+		实验内容要点 & 
+		\begin{enumerate}[label=\arabic*.]
+			\item 建立图像降质模型：$g(x,y) = h(x,y) * f(x,y) + n(x,y)$.
+			\item 逆滤波复原法：在频域利用 $G(u,v)/H(u,v)$ 恢复图像，但需注意在 $H(u,v) \approx 0$ 附近的病态性问题。
+			\item 维纳滤波复原法：引入最小均方误差准则，利用常数 $K$（信噪比倒数）来抑制逆滤波的噪声放大效应。
+		\end{enumerate}\\
+		\hline
+		教师评语 & \vspace{3.5cm} 
+		\hfill 教师签名：\makebox[2.5cm]{\hrulefill} \\
+		& \hfill \makebox[1cm]{\hrulefill}年\makebox[0.8cm]{\hrulefill}月\makebox[0.8cm]{\hrulefill}日 \\
+		\hline
+	\end{tabularx}
+	
+	\clearpage
+	
+	% ==================== 第 2 页：实验步骤 ====================
+	\renewcommand{\arraystretch}{1.5}
+	\begin{tabularx}{\textwidth}{|X|}
+		\hline
+		\textbf{实验步骤} \\
+		\hline
+		\vspace{22cm} \\ % 撑开中间的空白框
+		\hline
+	\end{tabularx}
+	
+	\clearpage
+	
+	% ==================== 第 3 页：实验步骤续与分析体会 ====================
+	\begin{tabularx}{\textwidth}{|X|}
+		\hline
+		\textbf{实验步骤} \\
+		\hline
+		\vspace{13cm} \\ % 留出空间给下方的分析体会
+		\hline
+	\end{tabularx}
+	
+	\vspace{0.6cm}
+	
+	% 实验分析体会栏
+	\renewcommand{\arraystretch}{1.5}
+	\begin{tabularx}{\textwidth}{|m{1.5cm}|X|}
+		\hline
+		\makecell[c]{实~验\\分~析\\体~会} & \vspace{4.5cm} 
+		\hfill 学生签名：\makebox[3.5cm]{\hrulefill} \\
+		\hline
+	\end{tabularx}
+	
+\end{document}
